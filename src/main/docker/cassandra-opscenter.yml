@@ -1,0 +1,34 @@
+version: '2'
+services:
+    jhipster-opscenter:
+        container_name: jhipster-opscenter
+        build:
+            context: opscenter/
+        ports:
+            - 8888:8888
+    jhipsterdemo-cassandra:
+        container_name: jhipsterdemo-cassandra
+        build:
+            context: .
+            dockerfile: cassandra/Cassandra-OpsCenter.Dockerfile
+        environment:
+            - CASSANDRA_CONTACT_POINT=jhipsterdemo-cassandra
+        # volumes:
+        #     - ~/volumes/jhipster/jhipsterDemo/cassandra/:/var/lib/cassandra/data
+        links:
+            - jhipster-opscenter:opscenter
+        ports:
+            - 7000:7000
+            - 7001:7001
+            - 7199:7199
+            - 9042:9042
+            - 9160:9160
+    jhipsterdemo-cassandra-node:
+        build:
+            context: .
+            dockerfile: cassandra/Cassandra-OpsCenter.Dockerfile
+        links:
+            - jhipsterdemo-cassandra:seed
+            - jhipster-opscenter:opscenter
+        environment:
+            - CASSANDRA_SEEDS=seed
